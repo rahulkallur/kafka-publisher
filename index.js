@@ -27,10 +27,20 @@ async function publisher() {
   try {
     await producer.connect();
     console.log("Connected to Kafka Broker");
+    let publishData = {
+      timestamp: `${Math.floor(Date.now() / 1000)}`,
+      data: data,
+    };
     await producer.send({
       topic: process.env.PUBLISH_TOPIC,
-      messages: [{ key: `trip-${Math.floor(Date.now() / 1000)}`, value: data }],
+      messages: [
+        {
+          key: `trip-${Math.floor(Date.now() / 1000)}`,
+          value: JSON.stringify(publishData),
+        },
+      ],
     });
+    console.log("PublishTime:", `${Math.floor(Date.now() / 1000)}`);
     console.log("Data Publiched to topic: " + process.env.PUBLISH_TOPIC);
   } catch (err) {
     console.log(err);
